@@ -3,12 +3,9 @@ import kotlin.math.abs
 fun main() {
 
     fun part1(input: List<String>): Int {
-        val lists = input
-            .map { it.split("\\s+".toRegex()) }
-            .map { it[0].toInt() to it[1].toInt() }
-            .unzip()
-        return lists.first.sorted()
-            .zip(lists.second.sorted())
+        val (left, right) = input.toLists()
+        return left.sorted()
+            .zip(right.sorted())
             .sumOf { abs(it.first - it.second) }
     }
 
@@ -24,3 +21,8 @@ fun main() {
     // check(part2(readInput("Day01_test")) == 31)
     // part2(readInput("Day01")).println()
 }
+
+fun List<String>.toLists(): Pair<List<Int>, List<Int>> = this
+    .map { it.split("\\s+".toRegex()) }
+    .map { it[0].toInt() to it[1].toInt() }
+    .unzip()
