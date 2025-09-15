@@ -10,7 +10,11 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val (left, right) = input.toLists()
+        return left.sumOf { locationId ->
+            val occurrences = right.count { locationId == it }
+            locationId * occurrences
+        }
     }
 
     // Part 1: total distance
@@ -18,8 +22,8 @@ fun main() {
     part1(readInput("Day01")).println()
 
     // Part 2: similarity score
-    // check(part2(readInput("Day01_test")) == 31)
-    // part2(readInput("Day01")).println()
+    check(part2(readInput("Day01_test")) == 31)
+    part2(readInput("Day01")).println()
 }
 
 fun List<String>.toLists(): Pair<List<Int>, List<Int>> = this
