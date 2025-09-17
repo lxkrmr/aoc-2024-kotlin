@@ -27,9 +27,9 @@ fun part1(input: List<String>): Int {
 
 fun part2(input: List<String>): Int {
     val (left, right) = input.toLists()
-    return left.sumOf { locationId ->
-        val occurrences = right.count { locationId == it }
-        locationId * occurrences
+    val frequencies = right.groupingBy { it }.eachCount()
+    return left.sumOf {
+        it * frequencies.getOrDefault(it, 0)
     }
 }
 
