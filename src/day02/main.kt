@@ -29,7 +29,14 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val (safe, unsafe) = input
+        .map { it.toReport() }
+        .partition { it.isSafe() }
+
+    val safeWhenOneLevelRemoved = unsafe.map { unsafeReport -> unsafeReport.leaveOneLevelOut() }
+        .mapNotNull { combinations -> combinations.firstOrNull { report -> report.isSafe() } }
+
+    return safe.size + safeWhenOneLevelRemoved.size
 }
 
 typealias Report = List<Int>
@@ -53,6 +60,10 @@ fun Report.allLevelsAreIncreasing(): Boolean = windowed(2)
 fun Report.allLevelsAreDecreasing(): Boolean = windowed(2)
     .map { it.last() - it.first() }
     .all { it.isNegative() }
+
+fun Report.leaveOneLevelOut(): List<Report> {
+    return indices.map { index -> filterIndexed { j, _ -> j != index }.toList() }
+}
 
 fun Level.isPositive(): Boolean = this > 0
 
