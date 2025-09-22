@@ -1,9 +1,13 @@
+package day01
+
+import println
+import readInput
 import kotlin.math.abs
 
 fun main() {
     try {
-        val testInput = readInput("Day01_test")
-        val puzzleInput = readInput("Day01")
+        val testInput = readInput("day01/test_input")
+        val puzzleInput = readInput("day01/input")
 
         // Part 1: total distance
         part1(testInput).also { check(it == 11) { "Expected 11 but got $it" } }
