@@ -3,10 +3,15 @@ package day03
 import println
 import readInput
 
+private const val day = "day03"
+private const val mulRegex = """mul\((\d{1,3}),(\d{1,3})\)"""
+private const val doRegex = """do\(\)"""
+private const val dontRegex = """don't\(\)"""
+
 fun main() {
     try {
-        val testInput = readInput("day03/test_input")
-        val puzzleInput = readInput("day03/input")
+        val testInput = readInput("$day/test_input")
+        val puzzleInput = readInput("$day/input")
 
         // Part 1: total distance
         part1(testInput).also { check(it == 161) { "Expected 161 but got $it" } }
@@ -23,11 +28,9 @@ fun main() {
 
 fun part1(input: List<String>): Int {
     return input.sumOf { line ->
-        "mul\\((\\d+),(\\d+)\\)".toRegex()
+        mulRegex.toRegex()
             .findAll(line)
-            .sumOf { matchResult ->
-                matchResult.groupValues[1].toInt() * matchResult.groupValues[2].toInt()
-            }
+            .sumOf { it.toProduct() }
     }
 }
 
@@ -36,20 +39,21 @@ fun part2(input: List<String>): Int {
     var doMul = true
 
     for (line in input) {
-        val findAll = """mul\((\d+),(\d+)\)|do\(\)|don't\(\)""".toRegex().findAll(line).toList()
+        val findAll = "$mulRegex|$doRegex|$dontRegex".toRegex().findAll(line).toList()
         for (matchResult in findAll) {
-            when(matchResult.value) {
+            when (matchResult.value) {
                 "do()" -> doMul = true
                 "don't()" -> doMul = false
                 else -> {
-                    if (doMul) {
-                        result += matchResult.groupValues[1].toInt() * matchResult.groupValues[2].toInt()
-                    }
+                    if (doMul) result += matchResult.toProduct()
                 }
             }
         }
     }
-
-
     return result
+}
+
+private fun MatchResult.toProduct(): Int {
+    val (first, second) = destructured
+    return first.toInt() * second.toInt()
 }
