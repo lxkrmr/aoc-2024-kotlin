@@ -28,10 +28,12 @@ fun part1(input: List<String>): Int {
     val grid = input.map { line -> line.toList() }
     for (x in grid.indices) {
         for (y in grid[x].indices) {
-            result += grid.horizontal(x, y).isXmasOrXmasReversed().toScore() +
-                    grid.vertical(x, y).isXmasOrXmasReversed().toScore() +
-                    grid.diagonalRight(x, y).isXmasOrXmasReversed().toScore() +
-                    grid.diagonalLeft(x, y).isXmasOrXmasReversed().toScore()
+            for (moveFn in moveFunctions) {
+                result += grid
+                    .extractString(x,y, 4, moveFn)
+                    .isXmas()
+                    .toScore()
+            }
         }
     }
     return result
@@ -41,44 +43,32 @@ fun part2(input: List<String>): Int {
     return 2
 }
 
-fun List<List<Char>>.horizontal(x: Int, y: Int): String {
+
+typealias Grid = List<List<Char>>
+typealias moveFn = (x: Int, y: Int, step: Int) -> Pair<Int, Int>
+
+val moveFunctions = listOf(
+    { x: Int, y: Int, step: Int -> x to y + step }, // "right"
+    { x: Int, y: Int, step: Int -> x to y - step }, // "left"
+    { x: Int, y: Int, step: Int -> x + step to y }, // "down"
+    { x: Int, y: Int, step: Int -> x - step to y }, // "up"
+    { x: Int, y: Int, step: Int -> x + step to y + step }, // "downRight"
+    { x: Int, y: Int, step: Int -> x + step to y - step }, // "downLeft"
+    { x: Int, y: Int, step: Int -> x - step to y + step }, // "upRight"
+    { x: Int, y: Int, step: Int -> x - step to y - step }, // "upLeft"
+)
+
+fun Grid.extractString(startX: Int, startY: Int, steps: Int, move: moveFn): String {
     return try {
-        val row = this[x]
-        row.subList(y, y + 4).joinToString("")
+        (0..<steps)
+            .map { step -> move(startX, startY, step) }
+            .map { (x, y) -> this[x][y] }
+            .joinToString("")
     } catch (_: IndexOutOfBoundsException) {
         ""
     }
 }
 
-fun List<List<Char>>.vertical(x: Int, y: Int): String {
-    return try {
-        val column = this.map { row -> row[y] }
-        column.subList(x, x + 4).joinToString("")
-    } catch (_: IndexOutOfBoundsException) {
-        ""
-    }
-}
-
-fun List<List<Char>>.diagonalRight(x: Int, y: Int): String {
-    return try {
-        (0..<4).map {
-            this[x + it][y + it]
-        }.joinToString("")
-    } catch (_: IndexOutOfBoundsException) {
-        ""
-    }
-}
-
-fun List<List<Char>>.diagonalLeft(x: Int, y: Int): String {
-    return try {
-        (0..<4).map {
-            this[x - it][y - it]
-        }.joinToString("")
-    } catch (_: IndexOutOfBoundsException) {
-        ""
-    }
-}
-
-fun String.isXmasOrXmasReversed(): Boolean = this.lowercase() == "xmas" || this.lowercase() == "samx"
+fun String.isXmas(): Boolean = this.lowercase() == "xmas"
 
 fun Boolean.toScore(): Int = if (this) 1 else 0
