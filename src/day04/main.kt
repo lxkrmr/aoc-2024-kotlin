@@ -31,7 +31,7 @@ fun part1(input: List<String>): Int {
             for (moveFn in moveFunctions) {
                 result += grid
                     .extractString(x, y, 4, moveFn)
-                    .isXmas()
+                    .isXmasOrXMasReversed()
                     .toScore()
             }
         }
@@ -56,13 +56,9 @@ typealias moveFn = (x: Int, y: Int, step: Int) -> Pair<Int, Int>
 
 val moveFunctions = listOf(
     { x: Int, y: Int, step: Int -> x to y + step }, // "right"
-    { x: Int, y: Int, step: Int -> x to y - step }, // "left"
     { x: Int, y: Int, step: Int -> x + step to y }, // "down"
-    { x: Int, y: Int, step: Int -> x - step to y }, // "up"
     { x: Int, y: Int, step: Int -> x + step to y + step }, // "downRight"
     { x: Int, y: Int, step: Int -> x + step to y - step }, // "downLeft"
-    { x: Int, y: Int, step: Int -> x - step to y + step }, // "upRight"
-    { x: Int, y: Int, step: Int -> x - step to y - step }, // "upLeft"
 )
 
 fun Grid.extractString(startX: Int, startY: Int, steps: Int, move: moveFn): String {
@@ -92,7 +88,7 @@ fun Grid.isStartOfTwoXmasInTheShapeOfAnX(x: Int, y: Int): Boolean {
     }
 }
 
-fun String.isXmas(): Boolean = this.lowercase() == "xmas"
+fun String.isXmasOrXMasReversed(): Boolean = this.lowercase() == "xmas" || this.lowercase() == "samx"
 
 fun String.isMasOrMasReversed(): Boolean = this.lowercase() == "mas" || this.lowercase() == "sam"
 
